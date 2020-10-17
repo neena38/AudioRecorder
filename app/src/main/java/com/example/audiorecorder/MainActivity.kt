@@ -24,7 +24,7 @@ private const val RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT
 class MainActivity : AppCompatActivity() {
 
     private lateinit var file: FileOutputStream
-    private var fileName: String = ""
+    private var fileName: String = " "
     private var bufferSize: Int? = null
     private lateinit var recordButton: Button
     private var isRecording: Boolean = false
