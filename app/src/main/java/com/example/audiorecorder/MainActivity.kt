@@ -10,11 +10,9 @@ package com.example.audiorecorder
 import android.Manifest
 import android.content.pm.PackageManager
 import android.media.*
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -39,14 +37,12 @@ class MainActivity : AppCompatActivity() {
     private var isRecording: Boolean = false
     private val BufferElementsToRec: Int = 1024
     private val bufferByteArray: ByteArray = ByteArray(BufferElementsToRec)
-    private val permissions: Array<String> =
-        arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private lateinit var recordButton: Button
     private lateinit var file: File
     private lateinit var recordingThread: Thread
     private lateinit var audioRecorder: AudioRecord
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,7 +52,6 @@ class MainActivity : AppCompatActivity() {
         permissionHandler()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -72,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun permissionHandler() {
         when (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
             PackageManager.PERMISSION_GRANTED -> listenButton()
@@ -84,7 +78,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun listenButton() {
         recordButton.setOnClickListener {
             when (isRecording) {
@@ -95,7 +88,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun startRecording() {
         bufferSizeInBytes = AudioRecord.getMinBufferSize(
             RECORDER_SAMPLERATE,
@@ -103,18 +95,11 @@ class MainActivity : AppCompatActivity() {
             RECORDER_AUDIO_ENCODING
         )
         Log.d("bufferSizeInBytes", bufferSizeInBytes.toString())
-        audioRecorder = AudioRecord.Builder()
-            .setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(RECORDER_AUDIO_ENCODING)
-                    .setSampleRate(RECORDER_SAMPLERATE)
-                    .setChannelMask(RECORDER_CHANNELS)
-                    .build()
-            )
-            .setBufferSizeInBytes(2 * bufferSizeInBytes!!)
-            .build()
-        Log.d("Info", "audioRecorder Initialized")
+        audioRecorder = AudioRecord(
+            MediaRecorder.AudioSource.MIC,
+            RECORDER_SAMPLERATE, RECORDER_CHANNELS,
+            RECORDER_AUDIO_ENCODING, 2*bufferSizeInBytes!!
+        )
         if (audioRecorder.state == AudioRecord.STATE_INITIALIZED) {
             Log.d("AudioRecorder", "Started")
             isRecording = true
